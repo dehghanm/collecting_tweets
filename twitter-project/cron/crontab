@@ -1,0 +1,4 @@
+PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+HOME=/work
+
+01 0 * * * python3 /work/core/cron/collect_tweets.py >> /var/log/cron.log 2>&1

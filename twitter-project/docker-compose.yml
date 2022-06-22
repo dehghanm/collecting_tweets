@@ -1,0 +1,37 @@
+version: '3'
+services:
+
+  web:
+    image: twitter_img:v0.0.1
+    container_name: twitter_container
+    build:
+      context: .
+      dockerfile: web.dockerfile
+    volumes:
+        - ./twitterAPI:/work
+    command: /bin/sh -c "python manage.py makemigrations --noinput; python manage.py migrate; gunicorn -b 0.0.0.0 -p 8000 twitterAPI.wsgi:application"
+    expose:
+      - 8000
+    restart: always
+
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 8005:80
+    depends_on:
+      - web
+    
+
+  cron:
+      build:
+        context: .
+        dockerfile: cron.dockerfile
+      # environment:
+      #   - CUSTOM_ENV_VAR=foobar
+      volumes:
+        - ./twitterAPI:/work
+        - ./cron/crontab:/etc/crontab
+      depends_on:
+        - web
+      restart: always
